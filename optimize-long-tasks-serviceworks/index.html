@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOMContentLoaded')
+        })
+
+        document.addEventListener('load', () => {
+            console.log('document.load')
+        })
+
+
+        window.addEventListener('load', () => {
+            console.log('addEventListener window.load')
+        })
+        console.log('头部内联脚本')
+
+        window.addEventListener('beforeunload', (event) => {
+            event.returnValue = "有未保存的值。确认要离开吗？";
+            console.log('beforeunload');
+        })
+
+        window.addEventListener('unload', () => {
+            console.log('unload');
+        })
+    </script>
+
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text" id="myinput">
+    <img src="" id="myimg" alt="">
+    <button onclick="calculate()">按下</button>
+    <script src="index.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker
+                    .register('./sw.longtask.js', { scope: '/' })
+                    .then(function (registration) {
+                        console.log('longtask service worker 注册成功, scope: “/”');
+                        navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage('longtask_calculate')
+                    })
+                    .catch(function (err) {
+                        console.error('serviceworker 注册失败,', err)
+                    })
+
+            })
+
+            navigator.serviceWorker.addEventListener('message', function (e) {
+                const { type, value } = e.data
+                if (type == "longtask_calculate") {
+                    myinput.value = value;
+                }
+            });
+        }
+    </script>
+
+</body>
+
+</html>
